@@ -1,0 +1,29 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{termcol}[2018/12/28 LaTeX Terminal Color v1.0]
+
+\RequirePackage{xcolor}
+\RequirePackage{luacode}
+
+\ProcessOptions\relax
+
+\begin{luacode*}
+function parsefile(filename)
+	file = io.open(filename .. ".tex", "w")
+	for line in io.lines(filename .. ".minttyrc") do
+		parts = string.split(line, "=")
+		name = parts[1]
+		rgb = parts[2]
+		file:write("\\definecolor{")
+		file:write(name)
+		file:write("}{RGB}{")
+		file:write(rgb)
+		file:write("}\n")
+	end
+	file:close()
+end
+\end{luacode*}
+\newcommand{\loadcolors}[1]{
+	\directlua{parsefile("#1")}
+	\input{#1}
+}
+\endinput
